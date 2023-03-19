@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://101.43.205.183:3306/db_find_friend
+    username: root
+    password: a9337737de271f00
+  session:
+    timeout: 86400
+    store-type: redis
+  application:
+    name: user-center
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  #redis的配置
+  redis:
+    port: 6379
+    host: 124.222.234.182
+    database: 1
+    password: YTbaiduren
