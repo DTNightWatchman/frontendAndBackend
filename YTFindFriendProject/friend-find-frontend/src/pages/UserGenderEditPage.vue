@@ -1,11 +1,26 @@
 <template>
   <van-form @submit="onSubmit">
-      <van-field
-          v-model="editUser.currentValue"
-          :name="editUser.editKey"
-          :label="editUser.editName"
-          :placeholder="`请输入${editUser.editName}`"
+    <van-field
+        v-model="fieldValue"
+        is-link
+        readonly
+        label="性别"
+        placeholder="选择性别"
+        @click="showPicker = true"
+    />
+    <van-popup v-model:show="showPicker" round position="bottom">
+      <van-picker
+          :columns="columns"
+          @cancel="showPicker = false"
+          @confirm="onConfirm"
       />
+    </van-popup>
+<!--      <van-field-->
+<!--          v-model="editUser.currentValue"-->
+<!--          :name="editUser.editKey"-->
+<!--          :label="editUser.editName"-->
+<!--          :placeholder="`请输入${editUser.editName}`"-->
+<!--      />-->
     <div style="margin: 16px;">
       <van-button round block type="primary" native-type="submit">
         提交
@@ -20,6 +35,12 @@ import { ref } from "vue";
 import myAxios from "../plugins/myAxios";
 import {Toast} from "vant";
 import {getCurrentUser} from "../services/user";
+import {showFailToast, showSuccessToast, showToast} from "vant/es";
+
+const columns = [
+  { text: '男', value: 0 },
+  { text: '女', value: 1 },
+];
 
 const route = useRoute();
 const router = useRouter();
@@ -30,7 +51,20 @@ const editUser = ref({
   editName: route.query.editName,
 })
 
+const fieldValue = ref((editUser.value.currentValue === '0' ? '男': '女'));
+const showPicker = ref(false);
+
+const onConfirm = ({ selectedOptions }) => {
+  showPicker.value = false;
+  fieldValue.value = selectedOptions[0].text;
+  editUser.value.currentValue = selectedOptions[0].value
+};
+
+
+
+
 const onSubmit = async () => {
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -46,10 +80,10 @@ const onSubmit = async () => {
   })
   console.log(res, '更新请求');
   if (res.code === 0 && res.data > 0) {
-    Toast.success('修改成功');
+    showSuccessToast("修改成功");
     router.back();
   } else {
-    Toast.fail('修改错误');
+    showFailToast('修改错误');
   }
 };
 

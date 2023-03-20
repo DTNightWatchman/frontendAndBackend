@@ -12,6 +12,7 @@ import UserLoginPage from "../pages/UserLoginPage.vue";
 import TeamAddPage from "../pages/TeamAddPage.vue";
 import TeamUpdatePage from "../pages/TeamUpdatePage.vue";
 import UserGenderEditPage from "../pages/UserGenderEditPage.vue";
+import UserAvatarEditPage from "../pages/UserAvatarEditPage.vue";
 
 
 const routes = [

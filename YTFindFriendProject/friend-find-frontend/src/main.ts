@@ -2,7 +2,7 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import * as VueRouter from 'vue-router';
 import routes from "./config/route";
-import Vant from 'vant';
+import Vant, {Picker} from 'vant';
 import 'vant/lib/index.css';
 
 const app = createApp(App);
@@ -13,6 +13,6 @@ const router = VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
     routes, // `routes: routes` 的缩写
 })
-
+app.use(Picker);
 app.use(router);
 app.mount('#app')

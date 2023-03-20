@@ -11,14 +11,28 @@
         </van-tag>
       </template>
       <template #footer>
-        <van-button size="mini">联系我</van-button>
+        <van-button size="mini" @click="showPopup(user.email)">联系我</van-button>
       </template>
     </van-card>
+
   </van-skeleton>
 </template>
 
 <script setup lang="ts">
 import {UserType} from "../models/user";
+import {showDialog, } from "vant/es";
+
+
+const showPopup = (email: string) => {
+  //show.value = true;
+  showDialog({
+    title: '用户email',
+    message: email,
+  }).then(() => {
+    // on close
+  });
+};
+
 
 interface UserCardListProps {
   loading: boolean;

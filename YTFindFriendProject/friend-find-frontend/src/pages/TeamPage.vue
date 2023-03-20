@@ -81,7 +81,7 @@ onMounted( () => {
   listTeam();
 })
 
-const onSearch = (val: string | undefined) => {
+const onSearch = (  val: string | undefined) => {
   listTeam(val);
 };
 
