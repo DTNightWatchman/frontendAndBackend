@@ -320,7 +320,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 queryWrapper.eq("id", id);
             }
             String searchText = teamQuery.getSearchText();
-            if ("".equals(searchText) || searchText == null) {
+            if (searchText != null && !"".equals(searchText)) {
                 queryWrapper.and(qw -> qw.like("name", searchText).or().like("description", searchText));
             }
             String name = teamQuery.getName();

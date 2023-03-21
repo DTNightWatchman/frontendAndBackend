@@ -11,7 +11,7 @@
     <van-cell title="注册时间" :value="dateUtil.formatDate(new Date(user.createTime))"/>
   </template>
 
-  <van-dialog v-model:show="show" title="修改头像" show-cancel-button width="240">
+  <van-dialog v-model:show="show" title="修改头像" show-cancel-button width="240" @confirm="uploadAvatar">
     <van-uploader style="margin-left: 30px" v-model="fileList" preview-size="180" multiple :max-count="1" />
   </van-dialog>
 </template>
@@ -20,17 +20,31 @@
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import myAxios from "../plugins/myAxios";
-import {Toast} from "vant";
+import {showFailToast, showSuccessToast, Toast} from "vant/es";
 import {getCurrentUser} from "../services/user";
 import {DateUtil} from "../utils/DateUtil";
 
 const fileList = ref([]);
 
+const user = ref();
+
+const uploadAvatar = async () => {
+  const res = await myAxios.post('/upload/avatar', {
+    avatar: fileList.value[0]
+  }, {headers:{'Content-Type':'multipart/form-data'}});
+  if (res != null && res.code === 0) {
+    showSuccessToast('修改头像成功');
+    user.value.avatarUrl = res.data;
+  } else {
+    showFailToast('修改头像失败');
+  }
+}
+
 const dateUtil = new DateUtil();
 
 const show = ref(false);
 
-const user = ref();
+
 
 onMounted(async () => {
   user.value = await getCurrentUser();

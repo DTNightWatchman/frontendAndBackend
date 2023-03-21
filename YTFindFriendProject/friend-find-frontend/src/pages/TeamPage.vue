@@ -25,9 +25,9 @@ const active = ref("public")
 
 const onTabChange = (name) => {
     if (name === 'public') {
-      listTeam(searchText, 0);
+      listTeam(searchText.value, 0);
     } else  {
-      listTeam(searchText, 2);
+      listTeam(searchText.value, 2);
     }
 }
 

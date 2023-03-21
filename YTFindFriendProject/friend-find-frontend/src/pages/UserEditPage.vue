@@ -46,7 +46,7 @@ const onSubmit = async () => {
   })
   console.log(res, '更新请求');
   if (res.code === 0 && res.data > 0) {
-    Toast.success('修改成功');
+    showSuccessToast('修改成功');
     router.back();
   } else {
     Toast.fail('修改错误');
