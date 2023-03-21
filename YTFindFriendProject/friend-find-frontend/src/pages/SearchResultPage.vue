@@ -26,8 +26,8 @@
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 import myAxios from "../plugins/myAxios";
-import {Toast} from "vant";
-import qs from 'qs';
+import {showSuccessToast, Toast} from "vant/es";
+
 
 const route = useRoute();
 const {tags} = route.query;
@@ -45,7 +45,7 @@ onMounted(async () => {
   })
       .then(function (response) {
         console.log('/user/search/tags succeed', response);
-        Toast.success("请求成功");
+        showSuccessToast("请求成功");
         console.log("test" + response?.data)
         return response?.data;
       })

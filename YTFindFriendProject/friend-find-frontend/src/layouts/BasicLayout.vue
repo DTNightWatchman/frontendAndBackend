@@ -1,5 +1,6 @@
 <template>
   <van-nav-bar
+      v-if="title!=='登录'"
       :title="title"
       left-arrow
       @click-left="onClickLeft"
@@ -14,7 +15,7 @@
   <div id="content">
     <router-view/>
   </div>
-  <van-tabbar route @change="onChange">
+  <van-tabbar v-if="title!=='登录'" route @change="onChange">
     <van-tabbar-item to="/" icon="home-o" name="index">主页</van-tabbar-item>
     <van-tabbar-item to="/team" icon="search" name="team">队伍</van-tabbar-item>
     <van-tabbar-item to="/user" icon="friends-o" name="user">个人</van-tabbar-item>

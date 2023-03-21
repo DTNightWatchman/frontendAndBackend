@@ -6,6 +6,8 @@ import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.UserInfo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.BaseResponse;
@@ -19,6 +21,7 @@ import com.example.demo.service.UserService;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.utils.AlgorithmUtils;
 import com.example.demo.utils.PasswordUtil;
+import com.example.demo.utils.PictureUtils;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -32,8 +35,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -384,6 +389,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }).collect(Collectors.toList());
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public String updateUserAvatar(MultipartFile file, HttpServletRequest request) {
+        String avatarUrl = PictureUtils.uploadMultipartFile(file);
+        // 写入数据库
+        User userInfo = this.getLoginUser(request);
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("avatarUrl", avatarUrl);
+        updateWrapper.eq("id", userInfo.getId());
+        boolean update = this.update(updateWrapper);
+        if (!update) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        return avatarUrl;
     }
 
 

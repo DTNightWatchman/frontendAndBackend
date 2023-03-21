@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://101.43.205.183:3306/db_find_friend
+    url:
     username: root
-    password: a9337737de271f00
+    password: a
   session:
     timeout: 86400
     store-type: redis
@@ -15,6 +15,14 @@ spring:
   #redis的配置
   redis:
     port: 6379
-    host: 124.222.234.182
+    host:
     database: 1
-    password: YTbaiduren
+    password:
+
+file:
+  #用于配置存储路径对应映射到url的访问路径，要配置在不同服务器上的图片存储路径，此处最好设置绝对路径防止文件无法访问
+  filePath: E:/github/frontendAndBackend/YTFindFriendProject/friend-find-backend/src/main/resources/static/images/
+  # 此处配置图片的访问路径的domain，到api为止，格式强制要求如下，这个的端口要和上方的port一致
+  domain: http://xxx.xxx.x.xxx:8080/api/
+  # api后的url，决定网络访问的url，最好不要修改，这与之前的配置相关
+  imagePath: /static/images/

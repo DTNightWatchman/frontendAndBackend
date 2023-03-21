@@ -61,9 +61,7 @@ public class UserTeamServiceImpl extends ServiceImpl<UserTeamMapper, UserTeam>
 
         try {
             BeanUtils.copyProperties(userVO, loginUser);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         List<TeamUserVO> teamUserVOList = new ArrayList<>();
@@ -84,6 +82,11 @@ public class UserTeamServiceImpl extends ServiceImpl<UserTeamMapper, UserTeam>
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
+            QueryWrapper<UserTeam> countQueryWrapper = new QueryWrapper<>();
+            countQueryWrapper.eq("teamId", team.getId());
+            Long hasJoin = this.count(countQueryWrapper);
+            teamUserVO.setCreateUser(userVO);
+            teamUserVO.setHasJoinNum(hasJoin.intValue());
             teamUserVOList.add(teamUserVO);
         }
         return teamUserVOList;

@@ -26,13 +26,20 @@
             @click="showPicker = true"
         />
         <van-popup v-model:show="showPicker" position="bottom">
-          <van-datetime-picker
-              v-model="addTeamData.expireTime"
-              @confirm="showPicker = false"
-              type="datetime"
-              title="请选择过期时间"
+          <van-date-picker
+              v-model="currentDate"
+              title="选择过期日期"
+              @confirm="selectDate"
               :min-date="minDate"
+              :max-date="maxDate"
           />
+<!--          <van-datetime-picker-->
+<!--              v-model="addTeamData.expireTime"-->
+<!--              @confirm="showPicker = false"-->
+<!--              type="datetime"-->
+<!--              title="请选择过期时间"-->
+<!--              :min-date="minDate"-->
+<!--          />-->
         </van-popup>
         <van-field name="stepper" label="最大人数">
           <template #input>
@@ -72,7 +79,7 @@
 import {useRouter} from "vue-router";
 import {ref} from "vue";
 import myAxios from "../plugins/myAxios";
-import {Toast} from "vant";
+import {showFailToast, showSuccessToast, Toast} from "vant/es";
 
 const router = useRouter();
 // 展示日期选择器
@@ -87,10 +94,18 @@ const initFormData = {
   "status": 0,
 }
 
+const selectDate = () => {
+  alert(currentDate.value)
+  showPicker.value = false;
+  addTeamData.value.expireTime = new Date(currentDate.value[0] + "/" + currentDate.value[1] + "/" + currentDate.value[2]);
+}
+
 const minDate = new Date();
 
 // 需要用户填写的表单数据
 const addTeamData = ref({...initFormData})
+
+const currentDate = ref(['2021', '01', '01']);
 
 // 提交
 const onSubmit = async () => {
@@ -101,13 +116,13 @@ const onSubmit = async () => {
   // todo 前端参数校验
   const res:any = await myAxios.post("/team/add", postData);
   if (res?.code === 0 && res.data){
-    Toast.success('添加成功');
+    showSuccessToast('创建队伍成功');
     router.push({
       path: '/team',
       replace: true,
     });
   } else {
-    Toast.success('添加失败');
+    showFailToast('创建队伍失败');
   }
 }
 </script>

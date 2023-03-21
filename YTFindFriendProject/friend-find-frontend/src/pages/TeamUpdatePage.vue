@@ -68,6 +68,7 @@ import {useRoute, useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import myAxios from "../plugins/myAxios";
 import {Toast} from "vant";
+import {showSuccessToast} from "vant/es";
 
 const router = useRouter();
 const route = useRoute();
@@ -109,13 +110,13 @@ const onSubmit = async () => {
   // todo 前端参数校验
   const res:any = await myAxios.post("/team/update", postData);
   if (res?.code === 0 && res.data){
-    Toast.success('更新成功');
+    showSuccessToast('更新成功');
     router.push({
       path: '/team',
       replace: true,
     });
   } else {
-    Toast.success('更新失败');
+    showSuccessToast('更新失败');
   }
 }
 </script>

@@ -9,6 +9,7 @@ import com.example.demo.model.request.TeamQuitRequest;
 import com.example.demo.model.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -104,4 +105,12 @@ public interface UserService extends IService<User> {
      * @return
      */
     List<UserVO> matchUsers(long num, User loginUser);
+
+
+    /**
+     * 修改用户头像
+     * @param file
+     * @return
+     */
+    String updateUserAvatar(MultipartFile file, HttpServletRequest request);
 }

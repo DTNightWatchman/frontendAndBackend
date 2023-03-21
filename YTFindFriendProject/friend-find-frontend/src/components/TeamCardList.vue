@@ -57,7 +57,7 @@ import {TeamType} from "../models/team";
 import {teamStatusEnum} from "../constants/team";
 import ikun from '../assets/ikun.png';
 import myAxios from "../plugins/myAxios";
-import {Toast} from "vant";
+import {showSuccessToast, Toast} from "vant/es";
 import {onMounted, ref} from "vue";
 import {getCurrentUser} from "../services/user";
 import {useRouter} from "vue-router";
@@ -112,7 +112,7 @@ const doJoinTeam = async () => {
     password: password.value
   });
   if (res?.code === 0) {
-    Toast.success('加入成功');
+    showSuccessToast('加入成功');
   } else {
     Toast.fail('加入失败' + (res.description ? `，${res.description}` : ''));
   }
@@ -141,7 +141,7 @@ const doQuitTeam = async (id: number) => {
     teamId: id
   });
   if (res?.code === 0) {
-    Toast.success('退出成功');
+    showSuccessToast('退出成功');
   } else {
     Toast.fail('操作失败' + (res.descriiption ? `，${res.description}` : ''));
   }
@@ -156,7 +156,7 @@ const doDeleteTeam = async (id: number) => {
     id,
   });
   if (res?.code === 0) {
-    Toast.success('操作成功');
+    showSuccessToast('操作成功');
   } else {
     Toast.fail('操作失败' + (res.description ? `，${res.description}` : ''));
   }

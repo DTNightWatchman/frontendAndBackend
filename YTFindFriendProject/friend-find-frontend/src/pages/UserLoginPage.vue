@@ -1,5 +1,7 @@
 <template>
-  <van-form @submit="onSubmit">
+  <van-form style="margin-top: 45%; text-align:center" @submit="onSubmit">
+
+    <h2>找伙伴系统</h2>
     <van-cell-group inset>
       <van-field
           v-model="userAccount"
@@ -29,7 +31,7 @@
 import {useRoute, useRouter} from "vue-router";
 import {ref} from "vue";
 import myAxios from "../plugins/myAxios";
-import {Toast} from "vant";
+import {showSuccessToast, Toast} from "vant/es";
 
 const router = useRouter();
 
@@ -43,7 +45,7 @@ const onSubmit = async () => {
   })
   console.log(res, '用户登录');
   if (res.code === 0 && res.data) {
-    Toast.success('登录成功');
+    showSuccessToast('登录成功');
     const redirectUrl = route.query?.redirectUrl as string ?? '/';
     window.location.replace(redirectUrl);
   } else {

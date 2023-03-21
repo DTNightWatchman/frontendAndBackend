@@ -1,4 +1,10 @@
 spring:
+  web:
+    resources:
+      static-locations: classpath:/static
+  devtools:
+    restart:
+      exclude: /static/
   profiles:
     active: dev
   datasource:
@@ -20,7 +26,6 @@ spring:
     port: 6379
     host: 127.0.0.1
     database: 1
-    #password: YTbaiduren
 
 server:
   port: 8080
@@ -39,3 +44,11 @@ mybatis-plus:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+file:
+  #用于配置存储路径对应映射到url的访问路径，要配置在不同服务器上的图片存储路径，此处最好设置绝对路径防止文件无法访问
+  filePath: E:/github/frontendAndBackend/YTFindFriendProject/friend-find-backend/src/main/resources/static/images/
+  # 此处配置图片的访问路径的domain，到api为止，格式强制要求如下，这个的端口要和上方的port一致
+  domain: http://127.0.0.1:8080/api/
+  # api后的url，决定网络访问的url，最好不要修改，这与之前的配置相关
+  imagePath: /static/images/
