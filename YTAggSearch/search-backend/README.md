@@ -145,7 +145,7 @@ PUT post_v1
 }
 ```
 
-这步不会操作的话需要补充下 Elasticsearch 的知识，或者自行百度一下~
+
 
 3）开启同步任务，将数据库的帖子同步到 Elasticsearch
 
@@ -157,4 +157,3 @@ PUT post_v1
 ```
 
 ## 项目架构
-![img_1.png](img_1.png)
