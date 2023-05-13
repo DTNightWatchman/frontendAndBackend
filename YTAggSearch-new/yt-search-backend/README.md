@@ -1,4 +1,4 @@
-# SpringBoot 项目初始模板
+# 搜索中台项目后端
 
 > 作者：[YTbaiduren](https://github.com/DTNightWatchman)
 
