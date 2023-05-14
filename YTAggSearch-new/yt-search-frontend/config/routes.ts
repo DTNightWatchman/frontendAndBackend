@@ -7,7 +7,7 @@
   //     { component: './404' },
   //   ],
   // },
-  { path: '/search', name: '搜索', icon: 'smile', component: './search' },
+  { path: '/search', icon: 'smile', component: './search' },
   // {
   //   path: '/admin',
   //   name: '管理页',
@@ -19,6 +19,6 @@
   //   ],
   // },
   // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
-  { path: '/', redirect: '/welcome' },
+  { path: '/', redirect: '/search' },
   { component: './404' },
 ];
