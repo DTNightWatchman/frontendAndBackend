@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef} from 'react';
 import { Input } from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
 import { Col, Row } from 'antd/lib/grid';
@@ -13,12 +13,24 @@ const SearchMain: React.FC = () => {
 
   const [tabPosition] = useState<ProCardTabsProps['tabPosition']>('top');
   const [query, setQuery] = useUrlState({ query: '', tab: 'post' });
+  //const [queryTest, setQueryTest] = useState<string>(query.query)
+  const queryTest = useRef<string>(query.query);
+
+  // const onSearch = useCallback((value: string) => {
+  //   alert(queryTest.current)
+  //   console.log(queryTest.current)
+  //   // todo 搜索
+  //   setQuery({
+  //     query: queryTest.current,
+  //   })
+  // }, [query, setQuery]);
 
   const onSearch = (value: string) =>{
+    alert(value + " " + query.tab)
     setQuery({
       query: value,
     })
-    alert(JSON.stringify(query))
+    //alert(JSON.stringify(query))
   };
 
   return (
@@ -44,8 +56,8 @@ const SearchMain: React.FC = () => {
           <Col xs={24} sm={18}>
             <ProCard  layout="center" bordered>
               <Search
-                value={query.query}
-                onChange={(e) => setQuery({ query: e.target.value})}
+                //value={queryTest}
+                onChange={(e) => queryTest.current = (e.target.value)}
                 placeholder="请输入搜素内容"
                 allowClear
                 enterButton="Search"
