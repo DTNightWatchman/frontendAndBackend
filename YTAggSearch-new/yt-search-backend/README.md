@@ -100,7 +100,7 @@ spring:
     timeout: 5000
     password: 123456
 ```
-
+![img.png](doc/img.png)
 2）修改 `application.yml` 中的 session 存储方式：
 
 ```yml
@@ -155,3 +155,29 @@ PUT post_v1
 // todo 取消注释开启任务
 //@Component
 ```
+
+## 业务实现过程
+### 图片搜素部分
+使用爬虫，从bing上根据搜索词爬取需要的图片
+```xml
+<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+<dependency>
+    <groupId>org.jsoup</groupId>
+    <artifactId>jsoup</artifactId>
+    <version>1.15.3</version>
+</dependency>
+```
+使用
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -30,12 +30,7 @@ import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户接口
@@ -307,5 +302,15 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    /**
+     * 根据搜索词搜索用户
+     * @param userQueryRequest
+     * @return
+     */
+    @PostMapping("/user/search")
+    public BaseResponse<List<UserVO>> searchUser(@RequestBody UserQueryRequest userQueryRequest) {
+        return ResultUtils.success(userService.searchUser(userQueryRequest.getSearchTest(), userQueryRequest.getCurrent()));
     }
 }

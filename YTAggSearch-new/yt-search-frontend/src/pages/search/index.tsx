@@ -6,6 +6,8 @@ import type { ProCardTabsProps } from '@ant-design/pro-components';
 import { ProCard } from '@ant-design/pro-components';
 import { useState } from 'react';
 import useUrlState from '@ahooksjs/use-url-state';
+import PostResult from "@/pages/result/PostResult";
+import PictureResult from "@/pages/result/PictureResult";
 
 const SearchMain: React.FC = () => {
 
@@ -86,12 +88,12 @@ const SearchMain: React.FC = () => {
                   {
                     label: `帖子`,
                     key: 'post',
-                    children: `帖子`,
+                    children: <PostResult />,
                   },
                   {
                     label: `图片`,
                     key: 'picture',
-                    children: `图片`,
+                    children: <PictureResult />,
                   },
                   {
                     label: `用户`,
