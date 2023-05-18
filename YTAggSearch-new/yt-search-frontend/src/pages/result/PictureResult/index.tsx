@@ -1,61 +1,26 @@
-import React, {useState} from 'react';
-import {Button, Card, List} from 'antd';
-const App: React.FC = () => {
+import React, {useEffect, useRef, useState} from 'react';
+import {Button, Card, List, message} from 'antd';
+
+export type Props = {
+  data: []
+}
+
+const App: React.FC<Props> = (props) => {
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-
-  const data = [
-    {
-      title: '小黑子 1',
-    },
-    {
-      title: '小黑子 2',
-    },
-    {
-      title: '小黑子 3',
-    },
-    {
-      title: '小黑子 4',
-    },
-    {
-      title: '小黑子 5',
-    },
-    {
-      title: '小黑子 6',
-    },
-    {
-      title: '小黑子 6',
-    },
-    {
-      title: '小黑子  6',
-    },
-  ];
+  const { data } = props;
 
   const { Meta } = Card;
 
 
-  function onLoadMore() {
-    alert("laoding more")
-  }
 
-  const loadMore =
-    !initLoading && !loading ? (
-      <div
-        style={{
-          textAlign: 'center',
-          marginTop: 12,
-          height: 32,
-          lineHeight: '32px',
-        }}
-      >
-        <Button onClick={onLoadMore}>loading more</Button>
-      </div>
-    ) : null;
+  function onLoadMore() {
+    alert("loading more")
+  }
 
   return (
     <>
       <List
-        loadMore={loadMore}
         grid={{
           gutter: 16,
           xs: 1,
@@ -66,12 +31,12 @@ const App: React.FC = () => {
           xxl: 5,
         }}
         dataSource={data}
-        renderItem={(item) => (
+        renderItem={(item: any) => (
           <List.Item>
             <Card
               hoverable
               style={{ width: 220 }}
-              cover={<img alt="example" src="https://imgo.hackhome.com/img2022/8/29/17/504481876.jpg" />}
+              cover={<img referrerPolicy={"no-referrer"} height={220} alt="example" src={item.url} />}
             >
               <Meta
                 title= {item.title}

@@ -1,5 +1,5 @@
-import React, { useRef} from 'react';
-import { Input } from 'antd';
+import React, {useEffect, useRef} from 'react';
+import {Input, message} from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
 import { Col, Row } from 'antd/lib/grid';
 import type { ProCardTabsProps } from '@ant-design/pro-components';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import useUrlState from '@ahooksjs/use-url-state';
 import PostResult from "@/pages/result/PostResult";
 import PictureResult from "@/pages/result/PictureResult";
+import {searchAllUsingPOST} from "@/services/yt-search-backend/searchAllController";
 
 const SearchMain: React.FC = () => {
 
@@ -16,22 +17,38 @@ const SearchMain: React.FC = () => {
   const [tabPosition] = useState<ProCardTabsProps['tabPosition']>('top');
   const [query, setQuery] = useUrlState({ query: '', tab: 'post' });
   //const [queryTest, setQueryTest] = useState<string>(query.query)
-  const queryTest = useRef<string>(query.query);
+  const [queryTest, setQueryTest] = useState<string>(query.query);
+  //const data = useRef<any>([]);
+  const [data, setData] = useState<any>([]);
 
-  // const onSearch = useCallback((value: string) => {
-  //   alert(queryTest.current)
-  //   console.log(queryTest.current)
-  //   // todo 搜索
-  //   setQuery({
-  //     query: queryTest.current,
-  //   })
-  // }, [query, setQuery]);
+
+  const searchAll = async (searchTest: string) => {
+    try {
+      const searchResult: API.BaseResponseListObject_ = await searchAllUsingPOST({
+        searchTest: searchTest,
+        tab: query.tab
+      })
+      if (searchResult.code === 0) {
+        setData(searchResult.data);
+      } else {
+        message.error(searchResult.message);
+      }
+    } catch (e) {
+      message.error("搜索错误");
+    }
+  }
+
+  useEffect(() => {
+    if (query.query !== null && query.query !== "") {
+      searchAll(query.query).then(r => {});
+    }
+  },[query])
 
   const onSearch = (value: string) =>{
-    alert(value + " " + query.tab)
     setQuery({
       query: value,
     })
+    searchAll(value).then(r => {});
     //alert(JSON.stringify(query))
   };
 
@@ -58,8 +75,8 @@ const SearchMain: React.FC = () => {
           <Col xs={24} sm={18}>
             <ProCard  layout="center" bordered>
               <Search
-                //value={queryTest}
-                onChange={(e) => queryTest.current = (e.target.value)}
+                value={queryTest}
+                onChange={(e) => setQueryTest(e.target.value)}
                 placeholder="请输入搜素内容"
                 allowClear
                 enterButton="Search"
@@ -93,7 +110,7 @@ const SearchMain: React.FC = () => {
                   {
                     label: `图片`,
                     key: 'picture',
-                    children: <PictureResult />,
+                    children: <PictureResult data={data} />,
                   },
                   {
                     label: `用户`,
