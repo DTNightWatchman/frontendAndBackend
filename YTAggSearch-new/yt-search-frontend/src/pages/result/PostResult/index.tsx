@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Avatar, Button, List, Skeleton, Tag} from 'antd';
+import { Button, List, Skeleton, Tag} from 'antd';
 
 interface DataType {
   gender?: string;

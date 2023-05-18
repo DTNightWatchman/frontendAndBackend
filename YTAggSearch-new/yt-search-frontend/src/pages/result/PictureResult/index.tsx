@@ -1,18 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Button, Card, List, message} from 'antd';
+import React from 'react';
+import {Button, Card, List} from 'antd';
 
 export type Props = {
+  loadingState: boolean
   data: []
 }
 
 const App: React.FC<Props> = (props) => {
-  const [initLoading, setInitLoading] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const { data } = props;
+
+  const { data , loadingState} = props;
 
   const { Meta } = Card;
-
-
 
   function onLoadMore() {
     alert("loading more")
@@ -21,6 +19,7 @@ const App: React.FC<Props> = (props) => {
   return (
     <>
       <List
+        loading={loadingState}
         grid={{
           gutter: 16,
           xs: 1,
@@ -40,7 +39,7 @@ const App: React.FC<Props> = (props) => {
             >
               <Meta
                 title= {item.title}
-                description="www.instagram.com"
+                description={item.url}
               />
             </Card>
           </List.Item>

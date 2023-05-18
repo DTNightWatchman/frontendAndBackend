@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect,} from 'react';
 import {Input, message} from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
 import { Col, Row } from 'antd/lib/grid';
@@ -20,10 +20,12 @@ const SearchMain: React.FC = () => {
   const [queryTest, setQueryTest] = useState<string>(query.query);
   //const data = useRef<any>([]);
   const [data, setData] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
 
 
   const searchAll = async (searchTest: string) => {
     try {
+      setLoading(true)
       const searchResult: API.BaseResponseListObject_ = await searchAllUsingPOST({
         searchTest: searchTest,
         tab: query.tab
@@ -33,8 +35,10 @@ const SearchMain: React.FC = () => {
       } else {
         message.error(searchResult.message);
       }
+      setLoading(false)
     } catch (e) {
       message.error("搜索错误");
+      setLoading(false);
     }
   }
 
@@ -98,6 +102,7 @@ const SearchMain: React.FC = () => {
           <div>
 
             <ProCard
+              loading={true}
               tabs={{
                 tabPosition,
                 activeKey: query.tab,
@@ -110,7 +115,7 @@ const SearchMain: React.FC = () => {
                   {
                     label: `图片`,
                     key: 'picture',
-                    children: <PictureResult data={data} />,
+                    children: <PictureResult data={data} loadingState={loading} />,
                   },
                   {
                     label: `用户`,
