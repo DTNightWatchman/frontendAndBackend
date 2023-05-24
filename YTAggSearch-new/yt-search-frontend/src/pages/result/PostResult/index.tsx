@@ -1,60 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, List, Skeleton, Tag} from 'antd';
+import { Divider } from 'antd';
 
-interface DataType {
-  gender?: string;
-  name: {
-    title?: string;
-    first?: string;
-    last?: string;
-  };
-  email?: string;
-  picture: {
-    large?: string;
-    medium?: string;
-    thumbnail?: string;
-  };
-  nat?: string;
-  loading: boolean;
+
+export type Props = {
+  loadingState: boolean
+  data: []
 }
 
-const count = 3;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
 
-const App: React.FC = () => {
-  const [initLoading, setInitLoading] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
-  const [list, setList] = useState<DataType[]>([]);
+const App: React.FC<Props> = (props) => {
+  const [initLoading] = useState(false);
+  const [loading] = useState(false);
+  const {data, loadingState} = props;
 
-  useEffect(() => {
-    fetch(fakeDataUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        setInitLoading(false);
-        setData(res.results);
-        setList(res.results);
-      });
-  }, []);
 
-  const onLoadMore = () => {
-    setLoading(true);
-    setList(
-      data.concat([...new Array(count)].map(() => ({ loading: true, name: {}, picture: {} }))),
-    );
-    fetch(fakeDataUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        const newData = data.concat(res.results);
-        setData(newData);
-        setList(newData);
-        setLoading(false);
-        // Resetting window's offsetTop so as to display react-virtualized demo underfloor.
-        // In real scene, you can using public method of react-virtualized:
-        // https://stackoverflow.com/questions/46700726/how-to-use-public-method-updateposition-of-react-virtualized
-        window.dispatchEvent(new Event('resize'));
-      });
-  };
+
+
 
   const loadMore =
     !initLoading && !loading ? (
@@ -66,37 +28,41 @@ const App: React.FC = () => {
           lineHeight: '32px',
         }}
       >
-        <Button onClick={onLoadMore}>loading more</Button>
+        <Button >loading more</Button>
       </div>
     ) : null;
 
   return (
     <List
       className="demo-loadmore-list"
-      loading={initLoading}
+      loading={loadingState}
       itemLayout="horizontal"
       loadMore={loadMore}
-      dataSource={list}
-      renderItem={(item) => (
-        <List.Item
-          actions={[<a key="list-loadmore-more">more</a>]}
-        >
+      dataSource={data}
+      renderItem={(item: any) => (
+        <List.Item>
           <Skeleton avatar title={false} loading={item.loading} active>
             <List.Item.Meta
+              title={
+                <div>
+                  <a href="https://ant.design">{item.title}</a>
+                  <Divider type="vertical" />
 
-              title={<a href="https://ant.design">{item.name?.last}</a>}
-              description="Ant Design, a design language for background applications, is refined by Ant UED Team
-              Ant Design, a design language for background applications, is refined by Ant UED Team
-              Ant Design, a design language for background applications, is refined by Ant UED Team"
+                    {item.tagList.map((tag: string) => (
+                      <Tag style={{height: 20}} color={"blue"} key={tag}>
+                        {tag}
+                      </Tag>
+                    ))}
+                </div>
+              }
+              description={<div dangerouslySetInnerHTML={{ __html: item.content }} />}
             />
-            <div>
-              <Tag color={"blue"} key="tag">{"tag"}</Tag>
-              <Tag color={"blue"} key="tag">{"tag"}</Tag>
-              <Tag color={"blue"} key="tag">{"tag"}</Tag>
-            </div>
+
           </Skeleton>
+
         </List.Item>
       )}
+
     />
   );
 };

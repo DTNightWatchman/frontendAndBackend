@@ -3,6 +3,7 @@ package com.yt.ytsearch.datasource;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yt.ytsearch.model.dto.post.PostQueryRequest;
 import com.yt.ytsearch.model.entity.Post;
 import com.yt.ytsearch.model.vo.PostVO;
@@ -12,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,8 @@ public class PostDatasource implements Datasource<PostVO> {
         return postPage.getRecords().stream().map(post -> {
             PostVO postVO = new PostVO();
             BeanUtils.copyProperties(post, postVO);
+            List<String> list = gson.fromJson(post.getTags(), new TypeToken<List<String>>() {}.getType());
+            postVO.setTagList(list);
             return postVO;
         }).collect(Collectors.toList());
     }

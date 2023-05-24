@@ -9,6 +9,7 @@ import useUrlState from '@ahooksjs/use-url-state';
 import PostResult from "@/pages/result/PostResult";
 import PictureResult from "@/pages/result/PictureResult";
 import {searchAllUsingPOST} from "@/services/yt-search-backend/searchAllController";
+import UserResult from '../result/UserResult';
 
 const SearchMain: React.FC = () => {
 
@@ -19,7 +20,9 @@ const SearchMain: React.FC = () => {
   //const [queryTest, setQueryTest] = useState<string>(query.query)
   const [queryTest, setQueryTest] = useState<string>(query.query);
   //const data = useRef<any>([]);
-  const [data, setData] = useState<any>([]);
+  const [postData, setPostData] = useState<any>([]);
+  const [pictureData, setPictureData] = useState<any>([]);
+  const [userData, setUserData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
 
@@ -31,7 +34,14 @@ const SearchMain: React.FC = () => {
         tab: query.tab
       })
       if (searchResult.code === 0) {
-        setData(searchResult.data);
+        if (query.tab === 'post') {
+          setPostData(searchResult.data);
+        } else if (query.tab === 'picture') {
+          setPictureData(searchResult.data);
+        } else if (query.tab === 'user') {
+          setUserData(searchResult.data);
+        }
+
       } else {
         message.error(searchResult.message);
       }
@@ -60,19 +70,7 @@ const SearchMain: React.FC = () => {
 
 
     <PageContainer title={false} ghost={true}>
-      {/*<>*/}
-      {/*  <button*/}
-      {/*    style={{ marginRight: 8 }}*/}
-      {/*    type="button"*/}
-      {/*    onClick={() => setState({ count: Number(state.count || 0) + 1 })}*/}
-      {/*  >*/}
-      {/*    add*/}
-      {/*  </button>*/}
-      {/*  <button type="button" onClick={() => setState({ count: undefined })}>*/}
-      {/*    clear*/}
-      {/*  </button>*/}
-      {/*  <div>state: {state?.count}</div>*/}
-      {/*</>*/}
+
       <ProCard direction="column" ghost gutter={[0, 8]}>
         <Row>
           <Col xs={0} sm={3}></Col>
@@ -110,17 +108,17 @@ const SearchMain: React.FC = () => {
                   {
                     label: `帖子`,
                     key: 'post',
-                    children: <PostResult />,
+                    children: <PostResult data={postData} loadingState={loading} />,
                   },
                   {
                     label: `图片`,
                     key: 'picture',
-                    children: <PictureResult data={data} loadingState={loading} />,
+                    children: <PictureResult data={pictureData} loadingState={loading} />,
                   },
                   {
                     label: `用户`,
                     key: 'user',
-                    children: `用户`,
+                    children: <UserResult data={userData} loadingState={loading} />,
                   },
                 ],
                 onChange: (key) => {

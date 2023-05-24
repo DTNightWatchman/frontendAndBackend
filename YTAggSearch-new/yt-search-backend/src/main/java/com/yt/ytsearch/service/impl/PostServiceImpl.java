@@ -1,5 +1,6 @@
 package com.yt.ytsearch.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,7 +36,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -43,6 +46,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -70,6 +74,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
 
     @Override
     public void validPost(Post post, boolean add) {
@@ -201,7 +206,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 分页
         PageRequest pageRequest = PageRequest.of((int) current, (int) pageSize);
         // 构造查询
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+        HighlightBuilder highlightBuilder = new HighlightBuilder().field("content", 50).preTags("<em style=\"color: red;\">").postTags("</em>");
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withHighlightBuilder(highlightBuilder)
                 .withPageable(pageRequest).withSorts(sortBuilder).build();
         SearchHits<PostEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, PostEsDTO.class);
         Page<Post> page = new Page<>();
@@ -210,21 +216,41 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 查出结果后，从 db 获取最新动态数据（比如点赞数）
         if (searchHits.hasSearchHits()) {
             List<SearchHit<PostEsDTO>> searchHitList = searchHits.getSearchHits();
+            // 得到所有的id
             List<Long> postIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
                     .collect(Collectors.toList());
-            List<Post> postList = baseMapper.selectBatchIds(postIdList);
-            if (postList != null) {
-                Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
-                postIdList.forEach(postId -> {
-                    if (idPostMap.containsKey(postId)) {
-                        resourceList.add(idPostMap.get(postId).get(0));
-                    } else {
-                        // 从 es 清空 db 已物理删除的数据
-                        String delete = elasticsearchRestTemplate.delete(String.valueOf(postId), PostEsDTO.class);
-                        log.info("delete post {}", delete);
-                    }
-                });
-            }
+            // 不回表，直接返回结果
+            //System.err.println(postIdList);
+            searchHitList.forEach(searchHit -> {
+                Map<String, List<String>> highlightFields = searchHit.getHighlightFields();
+                //System.out.println(searchHit.getContent());
+                Post post = new Post();
+                post.setTitle(searchHit.getContent().getTitle());
+                post.setContent(highlightFields.get("content") == null ?
+                        (searchHit.getContent().getContent().length() > 100 ? searchHit.getContent().getContent().substring(0, 100) : searchHit.getContent().getContent())
+                        : highlightFields.get("content").get(0));
+                String tagStr = searchHit.getContent().getTags().toString().substring(1, searchHit.getContent().getTags().toString().length() - 1);
+                post.setTags(tagStr);
+                resourceList.add(post);
+            });
+            //List<Post> postList = baseMapper.selectBatchIds(postIdList);
+//            QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.in("id", postIdList);
+//            String idsStr = StrUtil.join(",", postIdList);
+//            queryWrapper.last("order by field (id," + idsStr + ")");
+//            List<Post> postList = baseMapper.selectList(queryWrapper);
+//            if (postList != null) {
+//                Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
+//                postIdList.forEach(postId -> {
+//                    if (idPostMap.containsKey(postId)) {
+//                        resourceList.add(idPostMap.get(postId).get(0));
+//                    } else {
+//                        // 从 es 清空 db 已物理删除的数据
+//                        String delete = elasticsearchRestTemplate.delete(String.valueOf(postId), PostEsDTO.class);
+//                        log.info("delete post {}", delete);
+//                    }
+//                });
+//            }
         }
         page.setRecords(resourceList);
         return page;

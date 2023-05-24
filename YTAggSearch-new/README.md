@@ -20,3 +20,12 @@
 todo
 
 后端post，picture，user接口开发
+
+### 2023-5-18
+
+开发picture接口，使用门面模块
+
+后续开发计划：
+
+尽量使用技术：redis缓存，Dubbo框架
+

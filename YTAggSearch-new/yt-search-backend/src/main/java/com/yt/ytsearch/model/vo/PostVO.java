@@ -36,6 +36,11 @@ public class PostVO implements Serializable {
     private String content;
 
     /**
+     * 摘要
+     */
+    private String desc;
+
+    /**
      * 点赞数
      */
     private Integer thumbNum;
