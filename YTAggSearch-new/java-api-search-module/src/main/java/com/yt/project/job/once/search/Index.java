@@ -138,7 +138,7 @@ public class Index {
     }
 
     public void load() {
-        log.info("开始加载模块");
+        log.info("开始加载索引");
         long start = System.currentTimeMillis();
         File forwardIndexFile = new File(INDEX_PATH + "forward.txt");
         File invertedIndexFile = new File(INDEX_PATH + "inverted.txt");
@@ -149,7 +149,9 @@ public class Index {
             String forwardIndexJson = forwardIndexBufferedReader.readLine();
             String invertedIndexJson = invertedIndexBufferedReader.readLine();
             this.forwardIndex = gson.fromJson(forwardIndexJson, new TypeToken<List<DocInfo>>(){}.getType());
-            //this.invertedIndex = gson.fromJson(invertedIndexJson, ne )
+            this.invertedIndex = gson.fromJson(invertedIndexJson, new TypeToken<HashMap<String, List<Integer>>>(){}.getType());
+            long end = System.currentTimeMillis();
+            log.info("加载索引结束，耗时:" + (end - start) + "ms");
         } catch (IOException e) {
             e.printStackTrace();
         }
