@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
-import javax.print.Doc;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +18,8 @@ import java.util.List;
 
 
 @Slf4j
+@Component
+@Data
 public class Index {
 
     private static final String INDEX_PATH = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\indexpath\\";
@@ -131,7 +136,7 @@ public class Index {
             forwardIndexWriter.write(forwardIndexJson);
             invertedIndexWriter.write(invertedIndexJson);
             long end = System.currentTimeMillis();
-            log.info("加载索引结束，耗时：" + (end - start) + "ms");
+            log.info("加载索引结束，耗时:" + (end - start) + "ms");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,11 +154,16 @@ public class Index {
             String forwardIndexJson = forwardIndexBufferedReader.readLine();
             String invertedIndexJson = invertedIndexBufferedReader.readLine();
             this.forwardIndex = gson.fromJson(forwardIndexJson, new TypeToken<List<DocInfo>>(){}.getType());
-            this.invertedIndex = gson.fromJson(invertedIndexJson, new TypeToken<HashMap<String, List<Integer>>>(){}.getType());
+            this.invertedIndex = gson.fromJson(invertedIndexJson, new TypeToken<HashMap<String, List<Weight>>>(){}.getType());
             long end = System.currentTimeMillis();
             log.info("加载索引结束，耗时:" + (end - start) + "ms");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        Index index  = new Index();
+        index.load();
     }
 }
