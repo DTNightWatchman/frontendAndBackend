@@ -1,6 +1,6 @@
 package com.yt.project.service;
 
-import com.yt.project.model.vo.DocInfoVO;
+import com.yt.common.model.vo.DocInfoVO;
 
 import java.util.List;
 

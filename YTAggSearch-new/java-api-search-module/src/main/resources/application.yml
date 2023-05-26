@@ -19,6 +19,10 @@ server:
     context-path: /api
 
 dubbo:
+  consumer:
+    timeout: 300000
+  provider:
+    timeout: 300000
   application:
     name: dubbo-springboot-demo-provider
     qos-enable: false

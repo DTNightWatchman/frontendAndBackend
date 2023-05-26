@@ -3,7 +3,7 @@ package com.yt.project.service.impl;
 import com.yt.project.job.once.search.Index;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
-import com.yt.project.model.vo.DocInfoVO;
+import com.yt.common.model.vo.DocInfoVO;
 import com.yt.project.service.DocInfoService;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;

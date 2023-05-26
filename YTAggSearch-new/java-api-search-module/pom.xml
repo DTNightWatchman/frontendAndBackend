@@ -39,6 +39,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.yt</groupId>
+            <artifactId>yt-search-common</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
