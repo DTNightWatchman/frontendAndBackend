@@ -87,3 +87,13 @@ cos:
     secretKey: xxx
     region: xxx
     bucket: xxx
+
+dubbo:
+  application:
+    name: dubbo-springboot-demo-consumer
+    qos-enable: false
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: zookeeper://192.168.10.148:2181

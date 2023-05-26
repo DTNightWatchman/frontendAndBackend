@@ -17,3 +17,13 @@ server:
   port: 7529
   servlet:
     context-path: /api
+
+dubbo:
+  application:
+    name: dubbo-springboot-demo-provider
+    qos-enable: false
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: zookeeper://192.168.10.148:2181
