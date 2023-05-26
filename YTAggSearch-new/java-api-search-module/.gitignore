@@ -1,5 +1,6 @@
 HELP.md
 target/
+jdk-8u341-docs-all/
 indexpath/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
