@@ -18,6 +18,13 @@
         <dubbo.version>3.2.0</dubbo.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.yt</groupId>
+            <artifactId>yt-search-common</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
