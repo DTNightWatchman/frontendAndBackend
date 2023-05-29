@@ -116,9 +116,14 @@ public class Index {
             forwardIndex.add(docInfo);
         }
         return docInfo;
-     }
+    }
+    private Gson gson = new Gson();
 
-     private Gson gson = new Gson();
+    public void saveToDatabase() {
+        long start = System.currentTimeMillis();
+        log.info("开始保存索引到redis和MySQL");
+        //if ()
+    }
 
     public void save() {
         long start = System.currentTimeMillis();

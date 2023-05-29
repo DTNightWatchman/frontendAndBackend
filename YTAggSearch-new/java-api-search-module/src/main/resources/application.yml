@@ -9,10 +9,22 @@ spring:
     timeout: 86400
     store-type: redis
   # redis 配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_java_api_doc
+    username: root
+    password: 1111
+
   redis:
     port: 6379
     host: localhost
-    database: 0
+    database: 4
+    lettuce:
+      pool:
+        max-wait: 100ms
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
 server:
   port: 7529
   servlet:
@@ -24,7 +36,7 @@ dubbo:
   provider:
     timeout: 300000
   application:
-    name: dubbo-springboot-demo-provider
+    name: dubbo-java-api-doc-search-provider
     qos-enable: false
   protocol:
     name: dubbo

@@ -2,8 +2,10 @@ package com.yt.project.model.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Weight {
+public class Weight implements Serializable {
 
     /**
      * docId
