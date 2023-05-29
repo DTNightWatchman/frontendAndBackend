@@ -1,7 +1,8 @@
-package com.yt.project.job.once.search;
+package com.yt.project.job.search;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -17,9 +18,10 @@ public class Parser {
     // jdk路径
     private final static String JDK_DOC_PATH = "E:/github/frontendAndBackend/YTAggSearch-new/java-api-search-module/jdk-8u341-docs-all/docs/api";
 
-    private Index index = new Index();
+    @Resource
+    private Index index;
 
-    public void runByThread() {
+    public void run() {
         long begin = System.currentTimeMillis();
         log.info("开始制作索引");
         ArrayList<File> files = new ArrayList<>();
@@ -28,10 +30,36 @@ public class Parser {
         CountDownLatch countDownLatch = new CountDownLatch(files.size());
         ExecutorService executorService = Executors.newFixedThreadPool(12);
         for (File file : files) {
+            log.info("开始解析：" + file.getAbsolutePath());
+            parseHtml(file);
+            countDownLatch.countDown();
+        }
+
+
+        // 保存索引
+        index.save();
+        long end = System.currentTimeMillis();
+        log.info("解析并制作索引完成，耗时：" + (end - begin) + "ms");
+    }
+
+    @Transactional
+    public void runByThread() throws InterruptedException {
+        long begin = System.currentTimeMillis();
+        log.info("开始制作索引");
+        ArrayList<File> files = new ArrayList<>();
+        enumFile(JDK_DOC_PATH, files);
+        // 使用线程池来构建索引
+        CountDownLatch countDownLatch = new CountDownLatch(files.size());
+        ExecutorService executorService = Executors.newFixedThreadPool(12);
+        Thread.sleep(10000);
+        System.out.println(files.size());
+        Thread.sleep(10000);
+        for (File file : files) {
             executorService.submit(() -> {
                 log.info("开始解析：" + file.getAbsolutePath());
                 parseHtml(file);
                 countDownLatch.countDown();
+                log.error(String.valueOf(countDownLatch.getCount()));
             });
         }
         // 等待所有任务完成
@@ -51,7 +79,8 @@ public class Parser {
      * 解析html文件
      * @param file
      */
-    private void parseHtml(File file) {
+    @Transactional
+    public void parseHtml(File file) {
         String title = parseTitle(file);
         String url = parseUrl(file);
         String content = parseContent(file);
@@ -130,7 +159,7 @@ public class Parser {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Parser parser = new Parser();
         parser.runByThread();
     }

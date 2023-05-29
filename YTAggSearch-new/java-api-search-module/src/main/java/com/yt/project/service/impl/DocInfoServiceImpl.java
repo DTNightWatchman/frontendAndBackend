@@ -2,13 +2,15 @@ package com.yt.project.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.common.model.vo.DocInfoVO;
-import com.yt.project.job.once.search.Index;
+import com.yt.project.common.RedisCommon;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
 import com.yt.project.service.DocInfoService;
 import com.yt.project.mapper.DocInfoMapper;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
+import org.redisson.api.RMap;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -28,12 +30,11 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
     private final Set<String> stopWord = new HashSet<>();
 
-    @Resource
-    private Index index;
+
 
     @PostConstruct
     private void loadStopWord() {
-        index.load();
+        //index.load();
         // load 暂停词
         // 下载
         String stopWordPath = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\stop.txt";
@@ -52,13 +53,16 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
     }
 
+    @Resource
+    private RedissonClient redissonClient;
+
     /**
      * 根据倒排索引搜搜文档
      * @param line
      */
     @Override
     public List<DocInfoVO> searchDocInfo(String line, long current, int size) {
-        HashMap<String, ArrayList<Weight>> invertedIndex = index.getInvertedIndex();
+        RMap<String, ArrayList<Weight>> invertedIndex = redissonClient.getMap(RedisCommon.invertedIndex);
         List<Term> oldTerms = ToAnalysis.parse(line).getTerms();
         List<Term> terms = new ArrayList<>();
         // 去掉暂替词
@@ -82,7 +86,7 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
         // 根据结果查询倒排索引
         return result.stream().map(weight -> {
             int docId = weight.getDocId();
-            DocInfo docInfo = index.getDocInfo(docId);
+            DocInfo docInfo = new DocInfo();
             DocInfoVO docInfoVO = new DocInfoVO();
             docInfoVO.setTitle(docInfo.getTitle());
             docInfoVO.setUrl(docInfo.getUrl());
@@ -142,13 +146,10 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
         List<Weight> res = new ArrayList<>();
         // 定义优先队列
-        PriorityQueue<Pos> queue = new PriorityQueue<>(new Comparator<Pos>() {
-            @Override
-            public int compare(Pos o1, Pos o2) {
-                Weight w1 = allResult.get(o1.row).get(o1.col);
-                Weight w2 = allResult.get(o2.row).get(o2.col);
-                return w1.getDocId() - w2.getDocId();
-            }
+        PriorityQueue<Pos> queue = new PriorityQueue<>((o1, o2) -> {
+            Weight w1 = allResult.get(o1.row).get(o1.col);
+            Weight w2 = allResult.get(o2.row).get(o2.col);
+            return w1.getDocId() - w2.getDocId();
         });
         for (int i = 0; i < allResult.size(); i++) {
             queue.offer(new Pos(i, 0));

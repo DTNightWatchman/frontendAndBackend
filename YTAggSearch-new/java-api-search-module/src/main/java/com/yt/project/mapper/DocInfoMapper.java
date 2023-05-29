@@ -2,6 +2,7 @@ package com.yt.project.mapper;
 
 import com.yt.project.model.entity.DocInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author lenovo
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2023-05-29 17:15:09
 * @Entity com.yt.project.model.entity.DocInfo
 */
+@Mapper
 public interface DocInfoMapper extends BaseMapper<DocInfo> {
 
 }

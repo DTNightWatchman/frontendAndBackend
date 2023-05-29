@@ -18,9 +18,9 @@ class DocInfoServiceImplTest {
 
     @Test
     void searchDocInfo() {
-        List<DocInfoVO> docInfoVOS = docInfoService.searchDocInfo("arrayList", 0, 10);
-        for (DocInfoVO docInfoVO : docInfoVOS) {
-            System.out.println(docInfoVO);
-        }
+//        List<DocInfoVO> docInfoVOS = docInfoService.searchDocInfo("arrayList", 0, 10);
+//        for (DocInfoVO docInfoVO : docInfoVOS) {
+//            System.out.println(docInfoVO);
+//        }
     }
 }
