@@ -1,10 +1,12 @@
 package com.yt.project.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yt.common.model.vo.DocInfoVO;
 import com.yt.project.job.once.search.Index;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
-import com.yt.common.model.vo.DocInfoVO;
 import com.yt.project.service.DocInfoService;
+import com.yt.project.mapper.DocInfoMapper;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,14 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+* @author lenovo
+* @description 针对表【doc_info(存储Java的api文档信息)】的数据库操作Service实现
+* @createDate 2023-05-29 17:15:09
+*/
 @Service
-public class DocInfoServiceImpl implements DocInfoService {
+public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
+    implements DocInfoService{
 
     private final Set<String> stopWord = new HashSet<>();
 
@@ -170,4 +178,9 @@ public class DocInfoServiceImpl implements DocInfoService {
         }
         return res;
     }
+
 }
+
+
+
+
