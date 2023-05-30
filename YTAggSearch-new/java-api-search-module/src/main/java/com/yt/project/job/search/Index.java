@@ -2,7 +2,10 @@ package com.yt.project.job.search;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.yt.project.common.ErrorCode;
 import com.yt.project.common.RedisCommon;
+import com.yt.project.exception.BusinessException;
+import com.yt.project.mapper.DocInfoMapper;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
 import com.yt.project.service.DocInfoService;
@@ -33,12 +36,14 @@ public class Index {
 
     private static final String INDEX_PATH = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\indexpath\\";
 
-    private ArrayList<DocInfo> forwardIndex = new ArrayList<>();
+    private ArrayList<DocInfo> tmpArrayListDocInfo = new ArrayList<>();
 
     @Resource
     private RedissonClient redissonClient;
 
     private RMap<String,  List<Weight>> invertedIndex = null;
+
+    public volatile Long count = 0L;
 
 
     @PostConstruct
@@ -52,14 +57,14 @@ public class Index {
 
 
 
-    /**
-     * 从正派索引中获取文档信息
-     * @param docId
-     * @return
-     */
-    public DocInfo getDocInfo(int docId) {
-        return forwardIndex.get(docId);
-    }
+//    /**
+//     * 从正派索引中获取文档信息
+//     * @param docId
+//     * @return
+//     */
+//    public DocInfo getDocInfo(int docId) {
+//        return forwardIndex.get(docId);
+//    }
 
     public List<Weight> getInverted(String term) {
         return this.invertedIndex.get(term);
@@ -133,7 +138,7 @@ public class Index {
     }
 
     @Autowired
-    private DocInfoService docInfoService;
+    private DocInfoMapper docInfoMapper;
 
     @Transactional
     public DocInfo buildForward(String title, String url, String content) {
@@ -141,13 +146,10 @@ public class Index {
         docInfo.setTitle(title);
         docInfo.setUrl(url);
         docInfo.setContent(content);
-        synchronized (this.forwardIndex) {
-            boolean save = docInfoService.save(docInfo);
-            //System.err.println(save);
-            if (!save) {
-                log.error("没有保存成功：" + docInfo);
-                return null;
-            }
+        int insert = docInfoMapper.insert(docInfo);
+        if (insert != 1) {
+            log.error("插入数据错误");
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR ,"系统异常");
         }
         return docInfo;
     }
@@ -164,9 +166,9 @@ public class Index {
         File invertedIndexFile = new File(INDEX_PATH + "inverted.txt");
         try(Writer forwardIndexWriter = new FileWriter(forwardIndexFile);
             Writer invertedIndexWriter = new FileWriter(invertedIndexFile)) {
-            String forwardIndexJson = gson.toJson(this.forwardIndex);
+            //String forwardIndexJson = gson.toJson(this.forwardIndex);
             String invertedIndexJson = gson.toJson(this.invertedIndex);
-            forwardIndexWriter.write(forwardIndexJson);
+            //forwardIndexWriter.write(forwardIndexJson);
             invertedIndexWriter.write(invertedIndexJson);
             long end = System.currentTimeMillis();
             log.info("加载索引结束，耗时:" + (end - start) + "ms");
@@ -186,7 +188,7 @@ public class Index {
             BufferedReader invertedIndexBufferedReader = new BufferedReader(invertedIndexReader)) {
             String forwardIndexJson = forwardIndexBufferedReader.readLine();
             String invertedIndexJson = invertedIndexBufferedReader.readLine();
-            this.forwardIndex = gson.fromJson(forwardIndexJson, new TypeToken<List<DocInfo>>(){}.getType());
+            //this.forwardIndex = gson.fromJson(forwardIndexJson, new TypeToken<List<DocInfo>>(){}.getType());
             HashMap<String, List<Weight>> tmpHashMap = gson.fromJson(invertedIndexJson, new TypeToken<HashMap<String, List<Weight>>>(){}.getType());
             for (Map.Entry<String, List<Weight>> stringListEntry : tmpHashMap.entrySet()) {
                 this.invertedIndex.put(stringListEntry.getKey(), stringListEntry.getValue());

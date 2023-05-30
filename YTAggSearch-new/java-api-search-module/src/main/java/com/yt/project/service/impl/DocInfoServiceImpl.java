@@ -3,6 +3,7 @@ package com.yt.project.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.common.model.vo.DocInfoVO;
 import com.yt.project.common.RedisCommon;
+import com.yt.project.job.search.Index;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
 import com.yt.project.service.DocInfoService;
@@ -30,11 +31,13 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
     private final Set<String> stopWord = new HashSet<>();
 
+    @Resource
+    private Index index;
 
 
     @PostConstruct
     private void loadStopWord() {
-        //index.load();
+        index.load();
         // load 暂停词
         // 下载
         String stopWordPath = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\stop.txt";

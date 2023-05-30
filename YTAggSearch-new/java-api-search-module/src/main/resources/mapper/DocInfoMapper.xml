@@ -15,4 +15,11 @@
         id,url,title,
         content
     </sql>
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into doc_info (url, title, content)
+        values  
+        <foreach collection="list" item="entity" separator=",">
+            (#{entity.url}, #{entity.title}, #{entity.content})
+        </foreach>
+    </insert>
 </mapper>
