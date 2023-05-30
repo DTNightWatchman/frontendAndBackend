@@ -16,12 +16,15 @@ import org.ansj.splitWord.analysis.ToAnalysis;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.print.Doc;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,13 +33,14 @@ import java.util.Map;
 
 
 @Slf4j
-@Service
+@Component
 @Data
 public class Index {
 
     private static final String INDEX_PATH = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\indexpath\\";
 
-    private ArrayList<DocInfo> tmpArrayListDocInfo = new ArrayList<>();
+    public ArrayList<DocInfo> forwardIndex = new ArrayList<>();
+    public ArrayList<DocInfo> tmpForwardIndex = new ArrayList<>();
 
     @Resource
     private RedissonClient redissonClient;
@@ -73,9 +77,8 @@ public class Index {
     @Transactional
     public void addDoc(String title, String url, String content) {
         DocInfo docInfo = buildForward(title, url, content);
-        if (docInfo == null) {
-            return;
-        }
+        // ??
+        //DocInfo docInfo = buildForwardNoDB(title, url, content);
         buildInverted(docInfo);
     }
 
@@ -141,6 +144,19 @@ public class Index {
     private DocInfoMapper docInfoMapper;
 
     @Transactional
+    public DocInfo buildForwardNoDB(String title, String url, String content) {
+        DocInfo docInfo = new DocInfo();
+        docInfo.setTitle(title);
+        docInfo.setUrl(url);
+        docInfo.setContent(content);
+        synchronized (this.forwardIndex) {
+            docInfo.setId(this.forwardIndex.size());
+            this.forwardIndex.add(docInfo);
+        }
+        return docInfo;
+    }
+
+    @Transactional
     public DocInfo buildForward(String title, String url, String content) {
         DocInfo docInfo = new DocInfo();
         docInfo.setTitle(title);
@@ -200,5 +216,15 @@ public class Index {
         }
     }
 
+    @Value(value = "${thread.config.onceAddNum}")
+    private Integer onceAddNum;
 
+    public void saveToDb() {
+        System.out.println(this.forwardIndex.size());
+        //docInfoMapper.batchInsert(this.forwardIndex.subList(0, 20));
+        for (int i = 0; i < forwardIndex.size(); i+=15) {
+            docInfoMapper.batchInsert(this.forwardIndex.subList(i, Math.min(i+15, this.forwardIndex.size())));
+        }
+
+    }
 }

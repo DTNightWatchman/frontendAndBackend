@@ -37,7 +37,7 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
     @PostConstruct
     private void loadStopWord() {
-        index.load();
+        //index.load();
         // load 暂停词
         // 下载
         String stopWordPath = "E:\\github\\frontendAndBackend\\YTAggSearch-new\\java-api-search-module\\stop.txt";

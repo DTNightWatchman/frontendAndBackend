@@ -16,8 +16,5 @@ class ParserTest {
         parser.runByThread();
     }
 
-    @Test
-    void run() {
-        parser.run();
-    }
+
 }

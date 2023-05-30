@@ -1,12 +1,16 @@
 package com.yt.project.job.search;
 
+import com.yt.project.mapper.DocInfoMapper;
+import com.yt.project.model.entity.DocInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,32 +19,16 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class Parser {
 
+    @Resource
+    private DocInfoMapper docInfoMapper;
+
+
+
     // jdk路径
     private final static String JDK_DOC_PATH = "E:/github/frontendAndBackend/YTAggSearch-new/java-api-search-module/jdk-8u341-docs-all/docs/api";
 
     @Resource
     private Index index;
-
-    public void run() {
-        long begin = System.currentTimeMillis();
-        log.info("开始制作索引");
-        ArrayList<File> files = new ArrayList<>();
-        enumFile(JDK_DOC_PATH, files);
-        // 使用线程池来构建索引
-        CountDownLatch countDownLatch = new CountDownLatch(files.size());
-        ExecutorService executorService = Executors.newFixedThreadPool(12);
-        for (File file : files) {
-            log.info("开始解析：" + file.getAbsolutePath());
-            parseHtml(file);
-            countDownLatch.countDown();
-        }
-
-
-        // 保存索引
-        index.save();
-        long end = System.currentTimeMillis();
-        log.info("解析并制作索引完成，耗时：" + (end - begin) + "ms");
-    }
 
     @Transactional
     public void runByThread() throws InterruptedException {
@@ -51,15 +39,13 @@ public class Parser {
         // 使用线程池来构建索引
         CountDownLatch countDownLatch = new CountDownLatch(files.size());
         ExecutorService executorService = Executors.newFixedThreadPool(12);
-        Thread.sleep(10000);
         System.out.println(files.size());
-        Thread.sleep(10000);
         for (File file : files) {
             executorService.submit(() -> {
                 log.info("开始解析：" + file.getAbsolutePath());
                 parseHtml(file);
                 countDownLatch.countDown();
-                log.error(String.valueOf(countDownLatch.getCount()));
+                //log.error(String.valueOf(countDownLatch.getCount()));
             });
         }
         // 等待所有任务完成
@@ -70,7 +56,9 @@ public class Parser {
         }
         executorService.shutdown();
         // 保存索引
-        index.save();
+        //index.save();
+        index.saveToDb();
+        // 将所有的结果一次性存入数据库中
         long end = System.currentTimeMillis();
         log.info("解析并制作索引完成，耗时：" + (end - begin) + "ms");
     }
@@ -159,8 +147,4 @@ public class Parser {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Parser parser = new Parser();
-        parser.runByThread();
-    }
 }
