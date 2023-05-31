@@ -210,11 +210,21 @@ todo:
 
 将每次的搜索结果缓存到redis中 √
 
-同时实现分页查询
+同时实现分页查询 √
 
+测试和dubbo连接联动
 
+启动zookeeper
 
+> ./zkServer.sh start
 
+同时启动，es和kibana
+
+修改前端和后端的代码，添加java api 的 menu，添加一个用户Java api的tab，在后端联动这部分模块
+
+todo:
+
+解决远程调用出现 index越界问题？？？？
 
 
 
