@@ -1,5 +1,6 @@
 package com.yt.project.service.impl;
 
+import cn.hutool.core.stream.CollectorUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,7 +13,9 @@ import com.yt.project.service.DocInfoService;
 import com.yt.project.mapper.DocInfoMapper;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
+import org.apache.commons.lang3.StringUtils;
 import org.nlpcn.commons.lang.util.CollectionUtil;
+import org.redisson.api.RList;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +70,24 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
 
     @Override
     public List<DocInfoVO> searchDocInfoFromRedis(String line, long current, int size) {
+        if (current < 0) {
+            return new ArrayList<>();
+        }
+        if (StringUtils.isBlank(line)) {
+            return new ArrayList<>();
+        }
+        // 读取redis缓存
+        RList<DocInfoVO> docInfoVOSInRedis = redissonClient.getList("ytSearchProject:javaApiDocSearch:" + line);
+        if (!CollectionUtils.isEmpty(docInfoVOSInRedis)) {
+            // 结果不为空，直接将结果返回，并刷新redis缓存的时间
+            if (current >= docInfoVOSInRedis.size()) {
+                return new ArrayList<>();
+            }
+            // 刷新过期时间，返回结果
+            docInfoVOSInRedis.expire(100, TimeUnit.SECONDS);
+            return docInfoVOSInRedis.subList(Long.valueOf(current).intValue(),
+                    Math.min(docInfoVOSInRedis.size(), Long.valueOf(current).intValue() + Long.valueOf(size).intValue()));
+        }
         RMap<String, ArrayList<Weight>> invertedIndex = redissonClient.getMap(RedisCommon.invertedIndex);
         List<Term> oldTerms = ToAnalysis.parse(line).getTerms();
         List<Term> terms = new ArrayList<>();
@@ -101,9 +123,17 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
             docInfoVO.setDesc(desc);
             return docInfoVO;
         }).collect(Collectors.toList());
-        return docInfoVOS;
+        // 刷新缓存后将结果返回
+        docInfoVOSInRedis.addAll(docInfoVOS);
+        docInfoVOSInRedis.expire(100, TimeUnit.SECONDS);
+        if (current >= docInfoVOSInRedis.size()) {
+            return new ArrayList<>();
+        }
+        return docInfoVOSInRedis.subList(Long.valueOf(current).intValue(), Math.min(Long.valueOf(current + size).intValue(), docInfoVOSInRedis.size()));
     }
+
     Index index = new Index();
+
 
 
     /**
