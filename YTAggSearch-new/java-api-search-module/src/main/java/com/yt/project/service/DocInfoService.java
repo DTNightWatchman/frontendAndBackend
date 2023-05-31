@@ -21,4 +21,13 @@ public interface DocInfoService extends IService<DocInfo> {
      */
     List<DocInfoVO> searchDocInfo(String line, long current, int size);
 
+    /**
+     * 从redis中进行chax
+     * @param line
+     * @param current
+     * @param size
+     * @return
+     */
+    List<DocInfoVO> searchDocInfoFromRedis(String line, long current, int size);
+
 }

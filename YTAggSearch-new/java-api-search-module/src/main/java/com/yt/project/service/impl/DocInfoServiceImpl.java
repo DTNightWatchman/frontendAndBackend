@@ -1,18 +1,22 @@
 package com.yt.project.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.common.model.vo.DocInfoVO;
 import com.yt.project.common.RedisCommon;
-import com.yt.project.job.search.Index;
+import com.yt.project.job.once.Index;
 import com.yt.project.model.entity.DocInfo;
 import com.yt.project.model.entity.Weight;
 import com.yt.project.service.DocInfoService;
 import com.yt.project.mapper.DocInfoMapper;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
+import org.nlpcn.commons.lang.util.CollectionUtil;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -30,9 +34,10 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
     implements DocInfoService{
 
     private final Set<String> stopWord = new HashSet<>();
+//
+//    @Resource
+//    private Index index;
 
-    @Resource
-    private Index index;
 
 
     @PostConstruct
@@ -59,15 +64,57 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
     @Resource
     private RedissonClient redissonClient;
 
+    @Override
+    public List<DocInfoVO> searchDocInfoFromRedis(String line, long current, int size) {
+        RMap<String, ArrayList<Weight>> invertedIndex = redissonClient.getMap(RedisCommon.invertedIndex);
+        List<Term> oldTerms = ToAnalysis.parse(line).getTerms();
+        List<Term> terms = new ArrayList<>();
+        for (Term term : oldTerms) {
+            // 去除暂停词
+            if (!stopWord.contains(term.getName())) {
+                terms.add(term);
+            }
+        }
+        List<List<Weight>> allResult = new ArrayList<>();
+        for (Term term : terms) {
+            ArrayList<Weight> weights = invertedIndex.get(term.getName());
+            if (weights != null) {
+                allResult.add(weights);
+            }
+        }
+        List<Weight> result = mergeResult(allResult);
+        // 将结果根据weight进行降序
+        result.sort(((o1, o2) -> o2.getWeight() - o1.getWeight()));
+        // 根据结果从数据中排序
+        List<Integer> docIdCollect = result.stream().map(Weight::getDocId).collect(Collectors.toList());
+        QueryWrapper<DocInfo> queryWrapper = new QueryWrapper<>();
+        if (!CollectionUtils.isEmpty(docIdCollect)) {
+            String joinStr = StrUtil.join(",", docIdCollect);
+            queryWrapper.in("id", docIdCollect).last(" order by field (id," + joinStr + ")");
+        }
+        List<DocInfo> docInfoList = this.list(queryWrapper);
+        List<DocInfoVO> docInfoVOS = docInfoList.stream().map(docInfo -> {
+            DocInfoVO docInfoVO = new DocInfoVO();
+            docInfoVO.setUrl(docInfo.getUrl());
+            docInfoVO.setTitle(docInfo.getTitle());
+            String desc = getDesc(docInfo.getContent(), terms);
+            docInfoVO.setDesc(desc);
+            return docInfoVO;
+        }).collect(Collectors.toList());
+        return docInfoVOS;
+    }
+    Index index = new Index();
+
+
     /**
      * 根据倒排索引搜搜文档
      * @param line
      */
     @Override
     public List<DocInfoVO> searchDocInfo(String line, long current, int size) {
-        RMap<String, ArrayList<Weight>> invertedIndex = redissonClient.getMap(RedisCommon.invertedIndex);
-        List<Term> oldTerms = ToAnalysis.parse(line).getTerms();
+        HashMap<String, ArrayList<Weight>> invertedIndex = index.getInvertedIndex();
         List<Term> terms = new ArrayList<>();
+        List<Term> oldTerms = ToAnalysis.parse(line).getTerms();
         // 去掉暂替词
         for (Term term : oldTerms) {
             if (!stopWord.contains(term.getName())) {
@@ -89,7 +136,7 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
         // 根据结果查询倒排索引
         return result.stream().map(weight -> {
             int docId = weight.getDocId();
-            DocInfo docInfo = new DocInfo();
+            DocInfo docInfo = index.getDocInfo(docId);
             DocInfoVO docInfoVO = new DocInfoVO();
             docInfoVO.setTitle(docInfo.getTitle());
             docInfoVO.setUrl(docInfo.getUrl());
