@@ -23,6 +23,7 @@ const SearchMain: React.FC = () => {
   const [postData, setPostData] = useState<any>([]);
   const [pictureData, setPictureData] = useState<any>([]);
   const [userData, setUserData] = useState<any>([]);
+  const [javaApiDocData, setJavaApiDocData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
 
@@ -40,6 +41,8 @@ const SearchMain: React.FC = () => {
           setPictureData(searchResult.data);
         } else if (query.tab === 'user') {
           setUserData(searchResult.data);
+        } else if (query.tab === 'javaApiDoc') {
+          setJavaApiDocData(searchResult.data);
         }
 
       } else {
@@ -119,6 +122,11 @@ const SearchMain: React.FC = () => {
                     label: `用户`,
                     key: 'user',
                     children: <UserResult data={userData} loadingState={loading} />,
+                  },
+                  {
+                    label: `Java api文档`,
+                    key: 'javaApiDoc',
+                    children: <UserResult data={javaApiDocData} loadingState={loading} />,
                   },
                 ],
                 onChange: (key) => {

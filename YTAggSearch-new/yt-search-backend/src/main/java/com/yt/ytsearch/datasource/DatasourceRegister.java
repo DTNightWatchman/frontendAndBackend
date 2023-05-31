@@ -21,6 +21,9 @@ public class DatasourceRegister {
     @Resource
     private UserDatasource userDatasource;
 
+    @Resource
+    private JavaApiDocDatasource javaApiDocDatasource;
+
     private Map<String, Datasource> typeDataSourceMap;
 
     @PostConstruct
@@ -29,6 +32,7 @@ public class DatasourceRegister {
             put(SearchTypeEnum.POST.getValue(), postDatasource);
             put(SearchTypeEnum.USER.getValue(), userDatasource);
             put(SearchTypeEnum.PICTURE.getValue(), pictureDatasource);
+            put(SearchTypeEnum.JAVAAPIDOC.getValue(), javaApiDocDatasource);
         }};
     }
 

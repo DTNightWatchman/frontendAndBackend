@@ -1,6 +1,5 @@
 package com.yt.project.service.impl;
 
-import cn.hutool.core.stream.CollectorUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,7 +13,6 @@ import com.yt.project.mapper.DocInfoMapper;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.apache.commons.lang3.StringUtils;
-import org.nlpcn.commons.lang.util.CollectionUtil;
 import org.redisson.api.RList;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;

@@ -1,8 +1,7 @@
-package com.yt.project.service.impl;
+package com.yt.project.service;
 
 import com.yt.common.interfaceinfo.JavaApiDocSearch;
 import com.yt.common.model.vo.DocInfoVO;
-import com.yt.project.service.DocInfoService;
 import org.apache.dubbo.config.annotation.DubboService;
 
 import javax.annotation.Resource;
@@ -16,7 +15,8 @@ public class commonService implements JavaApiDocSearch {
 
     @Override
     public List<DocInfoVO> searchJavaApiDocSearch(String searchTest, Long current, Integer size) {
-        List<DocInfoVO> docInfoVOS = docInfoService.searchDocInfo(searchTest, current, size);
-        return docInfoVOS.subList(0, 10);
+        List<DocInfoVO> docInfoVOS = docInfoService.searchDocInfoFromRedis(searchTest, current, size);
+        System.err.println(docInfoVOS);
+        return docInfoVOS;
     }
 }

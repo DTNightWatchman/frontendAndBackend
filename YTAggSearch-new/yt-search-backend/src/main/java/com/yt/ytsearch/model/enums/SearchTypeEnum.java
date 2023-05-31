@@ -10,7 +10,8 @@ public enum SearchTypeEnum {
 
     POST("帖子", "post"),
     USER("用户", "user"),
-    PICTURE("图片", "picture");
+    PICTURE("图片", "picture"),
+    JAVAAPIDOC("Java api 文档", "javaApiDoc");
 
     private final String text;
 

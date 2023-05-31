@@ -13,6 +13,7 @@ const App: React.FC<Props> = (props) => {
   const { Meta } = Card;
 
   function onLoadMore() {
+    alert(JSON.stringify(data))
     alert("loading more")
   }
 
@@ -33,13 +34,12 @@ const App: React.FC<Props> = (props) => {
         renderItem={(item: any) => (
           <List.Item>
             <Card
-              hoverable
               style={{ width: 220 }}
-              cover={<img referrerPolicy={"no-referrer"} height={220} alt="example" src={item.url} />}
+              cover={<img height={220} alt="example" src={item?.userAvatar}/>}
             >
               <Meta
-                title= {item.title}
-                description={item.url}
+                title= {item.userName}
+                description={item.userProfile}
               />
             </Card>
           </List.Item>
