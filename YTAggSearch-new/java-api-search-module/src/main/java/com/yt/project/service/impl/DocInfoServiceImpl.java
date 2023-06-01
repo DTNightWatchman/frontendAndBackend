@@ -82,7 +82,7 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
                 return new ArrayList<>();
             }
             // 刷新过期时间，返回结果
-            docInfoVOSInRedis.expire(100, TimeUnit.SECONDS);
+            docInfoVOSInRedis.expire(RedisCommon.searchTestExpireTime, TimeUnit.SECONDS);
             return docInfoVOSInRedis.subList(Long.valueOf(current).intValue(),
                     Math.min(docInfoVOSInRedis.size(), Long.valueOf(current).intValue() + Long.valueOf(size).intValue()));
         }
@@ -123,7 +123,7 @@ public class DocInfoServiceImpl extends ServiceImpl<DocInfoMapper, DocInfo>
         }).collect(Collectors.toList());
         // 刷新缓存后将结果返回
         docInfoVOSInRedis.addAll(docInfoVOS);
-        docInfoVOSInRedis.expire(100, TimeUnit.SECONDS);
+        docInfoVOSInRedis.expire(RedisCommon.searchTestExpireTime, TimeUnit.SECONDS);
         if (current >= docInfoVOSInRedis.size()) {
             return new ArrayList<>();
         }

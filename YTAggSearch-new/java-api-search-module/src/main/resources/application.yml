@@ -50,6 +50,7 @@ dubbo:
     name: dubbo-java-api-doc-search-provider
     qos-enable: false
   protocol:
+    serialization: gson
     name: dubbo
     port: -1
   registry:
