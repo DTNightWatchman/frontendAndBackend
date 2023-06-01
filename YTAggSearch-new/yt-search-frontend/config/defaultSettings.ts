@@ -11,7 +11,7 @@ const Settings: LayoutSettings & {
   "fixedHeader": true,
   "fixSiderbar": true,
   "pwa": false,
-  "logo": "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg",
+  "logo": "https://ytbaiduren-1309783343.cos.ap-nanjing.myqcloud.com/logo%20%282%29.svg",
   "headerHeight": 48,
   "splitMenus": false,
   "menuRender": false

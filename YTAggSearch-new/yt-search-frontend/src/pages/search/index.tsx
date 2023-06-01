@@ -10,6 +10,7 @@ import PostResult from "@/pages/result/PostResult";
 import PictureResult from "@/pages/result/PictureResult";
 import {searchAllUsingPOST} from "@/services/yt-search-backend/searchAllController";
 import UserResult from '../result/UserResult';
+import JavaApiDocResult from "@/pages/result/JavaApiDocResult";
 
 const SearchMain: React.FC = () => {
 
@@ -126,7 +127,7 @@ const SearchMain: React.FC = () => {
                   {
                     label: `Java api文档`,
                     key: 'javaApiDoc',
-                    children: <UserResult data={javaApiDocData} loadingState={loading} />,
+                    children: <JavaApiDocResult data={javaApiDocData} loadingState={loading} />,
                   },
                 ],
                 onChange: (key) => {
