@@ -228,3 +228,23 @@ todo:
 
 
 
+# 2023-6-1
+
+出现序列化异常问题，大概是因为dubbo默认的序列化是fastjson，不会进行自动的序列化
+
+解决这个bug有两个解决方法：
+
+1. 启动fastjson的自动序列化，据我所知：开了自动化bug有点多。。。
+2. 替换序列化器，使用Gson进行序列化
+
+> [Gson | Apache Dubbo](https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/serialization/gson/)
+
+选择方案2 解决序列化问题
+
+替换log：
+
+https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg
+
+删掉：
+
+ https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png
