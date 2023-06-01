@@ -255,3 +255,14 @@ https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg
 2. 测试使用canal进行数据同步
 3. 测试各种创建线程池的方法，更了解线程池的一些知识。。。！！！ 很重要
 
+开发滚动加载：
+
+怎么将useState的数组中添加元素：
+
+```
+setArray([...array, item])
+```
+
+需要指定一下迭代方式
+
+完成点击加载更多。
