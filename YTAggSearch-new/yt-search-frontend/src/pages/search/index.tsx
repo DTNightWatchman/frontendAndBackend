@@ -1,10 +1,8 @@
-import React, {useEffect,} from 'react';
+import React, {useEffect, useState,} from 'react';
 import {Input, message} from 'antd';
-import { PageContainer } from '@ant-design/pro-components';
-import { Col, Row } from 'antd/lib/grid';
-import type { ProCardTabsProps } from '@ant-design/pro-components';
-import { ProCard } from '@ant-design/pro-components';
-import { useState } from 'react';
+import type {ProCardTabsProps} from '@ant-design/pro-components';
+import {PageContainer, ProCard} from '@ant-design/pro-components';
+import {Col, Row} from 'antd/lib/grid';
 import useUrlState from '@ahooksjs/use-url-state';
 import PostResult from "@/pages/result/PostResult";
 import PictureResult from "@/pages/result/PictureResult";
@@ -17,7 +15,7 @@ const SearchMain: React.FC = () => {
   const { Search } = Input;
 
   const [tabPosition] = useState<ProCardTabsProps['tabPosition']>('top');
-  const [query, setQuery] = useUrlState({ query: '', tab: 'post' });
+  const [query, setQuery] = useUrlState({ query: '', tab: 'post', current: 1 });
   //const [queryTest, setQueryTest] = useState<string>(query.query)
   const [queryTest, setQueryTest] = useState<string>(query.query);
   //const data = useRef<any>([]);
@@ -35,6 +33,7 @@ const SearchMain: React.FC = () => {
         searchTest: searchTest,
         tab: query.tab
       })
+
       if (searchResult.code === 0) {
         if (query.tab === 'post') {
           setPostData(searchResult.data);
@@ -43,7 +42,7 @@ const SearchMain: React.FC = () => {
         } else if (query.tab === 'user') {
           setUserData(searchResult.data);
         } else if (query.tab === 'javaApiDoc') {
-          setJavaApiDocData(searchResult.data);
+          setJavaApiDocData(searchResult.data)
         }
 
       } else {
@@ -69,6 +68,39 @@ const SearchMain: React.FC = () => {
     searchAll(value).then(r => {});
     //alert(JSON.stringify(query))
   };
+
+  const loadMore = async () => {
+    try {
+      setLoading(true)
+      const searchResult: API.BaseResponseListObject_ = await searchAllUsingPOST({
+        searchTest: query.query,
+        tab: query.tab,
+        current: query.current + (10)
+      })
+      if (searchResult.code === 0) {
+        query.current = query.current + 1;
+        if (query.tab === 'post') {
+          setPostData([...postData ,searchResult.data]);
+        } else if (query.tab === 'picture') {
+          setPictureData([...pictureData, searchResult.data]);
+        } else if (query.tab === 'user') {
+          setUserData(searchResult.data);
+        } else if (query.tab === 'javaApiDoc') {
+          const records: Record<string, any>[] | undefined = searchResult.data;
+          if (Array.isArray(records)) {
+            setJavaApiDocData([...javaApiDocData, ...records]);
+          }
+        }
+      } else {
+        message.error(searchResult.message);
+      }
+      setLoading(false)
+    } catch (e) {
+      message.error("搜索错误");
+      setLoading(false);
+    }
+  }
+
 
   return (
 
@@ -127,7 +159,7 @@ const SearchMain: React.FC = () => {
                   {
                     label: `Java api文档`,
                     key: 'javaApiDoc',
-                    children: <JavaApiDocResult data={javaApiDocData} loadingState={loading} />,
+                    children: <JavaApiDocResult loadMoreFunc={loadMore} data={javaApiDocData} loadingState={loading} />,
                   },
                 ],
                 onChange: (key) => {

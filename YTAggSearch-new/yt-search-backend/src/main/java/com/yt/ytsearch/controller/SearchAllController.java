@@ -32,7 +32,7 @@ public class SearchAllController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Datasource datasource  = datasourceRegister.getDatasourceByType(searchRequest.getTab());
-        //System.out.println(datasource);
+        // System.out.println(datasource);
         List<Object> res = datasource.doSearch(searchRequest.getSearchTest(), searchRequest.getCurrent(), searchRequest.getPageSize());
         return ResultUtils.success(res);
     }

@@ -5,14 +5,15 @@ import { Divider } from 'antd';
 
 export type Props = {
   loadingState: boolean
-  data: []
+  data: [],
+  loadMoreFunc: () => void
 }
 
 
 const App: React.FC<Props> = (props) => {
   const [initLoading] = useState(false);
   const [loading] = useState(false);
-  const {data, loadingState} = props;
+  const {data, loadingState, loadMoreFunc} = props;
 
 
   const loadMore =
@@ -25,7 +26,7 @@ const App: React.FC<Props> = (props) => {
           lineHeight: '32px',
         }}
       >
-        <Button >loading more</Button>
+        <Button onClick={loadMoreFunc}>loading more</Button>
       </div>
     ) : null;
 
