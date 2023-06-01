@@ -248,3 +248,10 @@ https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg
 删掉：
 
  https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png
+
+后续开发：
+
+1. 点击加载更多部分代码实现
+2. 测试使用canal进行数据同步
+3. 测试各种创建线程池的方法，更了解线程池的一些知识。。。！！！ 很重要
+
