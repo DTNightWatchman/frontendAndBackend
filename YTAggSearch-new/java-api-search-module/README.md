@@ -1,4 +1,4 @@
-# SpringBoot 项目初始模板
+# Java api 文档搜索模块
 
 > by YT摆渡人
 
@@ -8,5 +8,5 @@
 3. 以HashMap数据结构作为倒排索引
 
 ## 后续开发
-- [ ] 将数据共享到redis中
-- [ ] 引入Dubbo便于被远程调用
+- [x] 将数据共享到redis中
+- [x] 引入Dubbo便于被远程调用
