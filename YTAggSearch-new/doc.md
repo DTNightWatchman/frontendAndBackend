@@ -271,3 +271,24 @@ setArray([...array, item])
 
 完成前后端部署
 
+### 前端使用vercel部署：
+
+编写vercel.json配置vercel的反向代理：
+
+```
+{
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "http://106.14.2.253:8888/api/$1"
+    }
+  ]
+}
+```
+
+vercel上传代码的时候指定配置文件：
+
+> vercel -A ../vercel.json --prod
+
+### 后端使用微信云部署的方式进行部署
+
