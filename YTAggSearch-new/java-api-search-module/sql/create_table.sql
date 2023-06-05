@@ -1,8 +1,8 @@
 -- 创建库
-create database if not exists db_search;
+create database if not exists db_java_api_doc;
 
 -- 切换库
-use db_search;
+use db_java_api_doc;
 
 create table doc_info
 (
